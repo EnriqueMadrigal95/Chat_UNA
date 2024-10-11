@@ -1,0 +1,94 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Helvetica, Arial, sans-serif;
+  background-color: #1e1e1e;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Encabezado del chat */
+.header {
+  background-color: #2a2f32;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #3b4a54;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.header a {
+  color: rgb(130, 224, 255);
+  text-decoration: none;
+}
+
+/* Contenedor del chat con el fondo espacial */
+#chat-box {
+  flex: 1;
+  padding: 20px;
+  background-image: url('https://s1.1zoom.me/b5050/876/373381-sepik_1366x768.jpg');
+  background-size: cover;
+  background-position: center;
+  overflow-y: auto;
+  border-top: 1px solid #3b4a54;
+}
+
+#chat-box ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#chat-box li {
+  background: #202c33;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+#chat-box li:nth-child(odd) {
+  background: #2a3942;
+}
+
+/* Pie de página del chat con el formulario para enviar mensajes */
+.footer {
+  padding: 10px;
+  display: flex;
+  background-color: #2a2f32;
+  border-top: 1px solid #3b4a54;
+}
+
+.footer input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #3b4a54;
+  color: white;
+}
+
+.footer button {
+  margin-left: 10px;
+  padding: 10px;
+  background-color: rgb(130, 224, 255);
+  border: none;
+  border-radius: 5px;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.footer input::placeholder {
+  color: #b1b3b5;
+}
