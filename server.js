@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const { auth, requiresAuth } = require('express-openid-connect');
@@ -11,14 +12,14 @@ const server = http.createServer(app);
 const io = socketio(server);
 const port = process.env.PORT || 3000;
 
-// Configuración Auth0
+// Configuración Auth0 con variables de entorno
 const config = {
   authRequired: false, // No es obligatorio para la raíz
   auth0Logout: true, 
-  secret: '',
-  baseURL: 'http://localhost:3000',
-  clientID: '',
-  issuerBaseURL: ''
+  secret: process.env.AUTH0_SECRET,
+  baseURL: process.env.AUTH0_BASE_URL,
+  clientID: process.env.AUTH0_CLIENT_ID,
+  issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL
 };
 
 app.use(auth(config));
