@@ -1,4 +1,3 @@
-
 name: Chat_UNA CI
 
 on:
@@ -8,26 +7,27 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
+  build-and-test:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [20.x]
-        
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        
+
     - name: Install dependencies
-    - run: npm ci
-    # Inyectar las variables de entorno desde los secretos de GitHub
+      run: npm ci
+
+    # Este es el paso que inyecta las variables de entorno desde los secretos
     - name: Set environment variables
       run: |
         echo "PORT=${{ secrets.PORT }}" >> $GITHUB_ENV
@@ -35,5 +35,6 @@ jobs:
         echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> $GITHUB_ENV
         echo "AUTH0_BASE_URL=${{ secrets.AUTH0_BASE_URL }}" >> $GITHUB_ENV
         echo "AUTH0_ISSUER_BASE_URL=${{ secrets.AUTH0_ISSUER_BASE_URL }}" >> $GITHUB_ENV
+
     - name: Run tests
-    - run: npm test
+      run: npm test
