@@ -7,9 +7,30 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-test:
+  # Job para construir e instalar dependencias
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
 
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+  # Job para ejecutar los tests (depende del job build)
+  test:
+    runs-on: ubuntu-latest
+    needs: build
     strategy:
       matrix:
         node-version: [20.x]
@@ -31,22 +52,18 @@ jobs:
     - name: List installed packages
       run: npm list
 
-    # Este es el paso que inyecta las variables de entorno desde los secretos
-    - name: Set environment variables
-      run: |
-        echo "PORT=${{ secrets.PORT }}" >> $GITHUB_ENV
-        echo "AUTH0_SECRET=${{ secrets.AUTH0_SECRET }}" >> $GITHUB_ENV
-        echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> $GITHUB_ENV
-        echo "AUTH0_BASE_URL=${{ secrets.AUTH0_BASE_URL }}" >> $GITHUB_ENV
-        echo "AUTH0_ISSUER_BASE_URL=${{ secrets.AUTH0_ISSUER_BASE_URL }}" >> $GITHUB_ENV
-
     # Ejecutar las pruebas con Mocha
     - name: Run tests
       run: npm test
 
-    # Paso opcional: Instalar Mocha globalmente (si persisten los problemas)
-    - name: Install Mocha globally (optional)
-      run: npm install -g mocha
+  # Job para construir la imagen Docker (depende de los tests)
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     # Iniciar sesión en Docker Hub utilizando los secretos
     - name: Log in to Docker Hub
@@ -62,3 +79,12 @@ jobs:
     # Subir la imagen Docker a Docker Hub
     - name: Push Docker image
       run: docker push enriquemr171/chat-una-app:latest
+
+  # Job para el despliegue (depende del job de Docker)
+  deploy:
+    runs-on: ubuntu-latest
+    needs: docker
+
+    steps:
+    - name: Deploy to server
+      run: echo "Aquí iría tu comando de despliegue"
