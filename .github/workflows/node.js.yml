@@ -38,3 +38,18 @@ jobs:
 
     - name: Run tests
       run: npm test
+
+    # Iniciar sesión en Docker Hub utilizando los secretos
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # Construir la imagen Docker con la etiqueta latest
+    - name: Build Docker image
+      run: docker build -t enriquemr171/chat-una-app:latest .
+
+    # Subir la imagen Docker a Docker Hub
+    - name: Push Docker image
+      run: docker push enriquemr171/chat-una-app:latest
