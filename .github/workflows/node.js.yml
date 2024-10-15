@@ -1,4 +1,3 @@
-
 name: Chat_UNA CI
 
 on:
@@ -8,21 +7,49 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
+  build-and-test:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [20.x]
-        
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-    - run: npm test
+
+    - name: Install dependencies
+      run: npm ci
+
+    # Este es el paso que inyecta las variables de entorno desde los secretos
+    - name: Set environment variables
+      run: |
+        echo "PORT=${{ secrets.PORT }}" >> $GITHUB_ENV
+        echo "AUTH0_SECRET=${{ secrets.AUTH0_SECRET }}" >> $GITHUB_ENV
+        echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> $GITHUB_ENV
+        echo "AUTH0_BASE_URL=${{ secrets.AUTH0_BASE_URL }}" >> $GITHUB_ENV
+        echo "AUTH0_ISSUER_BASE_URL=${{ secrets.AUTH0_ISSUER_BASE_URL }}" >> $GITHUB_ENV
+
+    - name: Run tests
+      run: npm test
+
+    # Iniciar sesión en Docker Hub utilizando los secretos
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # Construir la imagen Docker con la etiqueta latest
+    - name: Build Docker image
+      run: docker build -t enriquemr171/chat-una-app:latest .
+
+    # Subir la imagen Docker a Docker Hub
+    - name: Push Docker image
+      run: docker push enriquemr171/chat-una-app:latest
