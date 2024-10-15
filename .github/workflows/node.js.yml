@@ -86,5 +86,15 @@ jobs:
     needs: docker
 
     steps:
-    - name: Deploy to server
-      run: echo "Aquí iría tu comando de despliegue"
+    # Loguearse en Azure
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # Desplegar la imagen Docker a Azure Web App
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: "CHATUNA"  # Cambia esto por el nombre de tu Azure Web App
+        images: "enriquemr171/chat-una-app:latest"
