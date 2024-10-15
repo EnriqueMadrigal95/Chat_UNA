@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  # Job para construir e instalar dependencias
+  
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -27,7 +27,7 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-  # Job para ejecutar los tests (depende del job build)
+  # Job test
   test:
     runs-on: ubuntu-latest
     needs: build
@@ -56,7 +56,7 @@ jobs:
     - name: Run tests
       run: npm test
 
-  # Job para construir la imagen Docker (depende de los tests)
+  # Job para construir la imagen Docker 
   docker:
     runs-on: ubuntu-latest
     needs: test
@@ -65,36 +65,36 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Iniciar sesión en Docker Hub utilizando los secretos
+    
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    # Construir la imagen Docker con la etiqueta latest
+    
     - name: Build Docker image
       run: docker build -t enriquemr171/chat-una-app:latest .
 
-    # Subir la imagen Docker a Docker Hub
+    
     - name: Push Docker image
       run: docker push enriquemr171/chat-una-app:latest
 
-  # Job para el despliegue (depende del job de Docker)
+  
   deploy:
     runs-on: ubuntu-latest
     needs: docker
 
     steps:
-    # Loguearse en Azure
+    
     - name: Azure login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    # Desplegar la imagen Docker a Azure Web App
+    
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: "CHATUNA"  # Cambia esto por el nombre de tu Azure Web App
+        app-name: "CHATUNA"  
         images: "enriquemr171/chat-una-app:latest"
