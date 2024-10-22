@@ -9,7 +9,7 @@ on:
 jobs:
   
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       matrix:
         node-version: [20.x]
@@ -29,7 +29,7 @@ jobs:
 
   # Job test
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build
     strategy:
       matrix:
@@ -58,7 +58,7 @@ jobs:
 
   # Job para construir la imagen Docker 
   docker:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: test
 
     steps:
@@ -82,7 +82,7 @@ jobs:
 
   
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: docker
 
     steps:
