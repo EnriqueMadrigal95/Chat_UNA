@@ -92,6 +92,8 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Verify Azure authentication
+      run: az account show
 
     
     - name: Deploy to Azure Web App
